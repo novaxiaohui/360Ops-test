@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+# --*-- coding:utf-8 --*--
+__author__ = 'Novaxiaohui'
+import os
+import re
+import subprocess
+
+def read_ifconfig():
+    p = subprocess.Popen('ifconfig', stdout=subprocess.PIPE, shell=True)
+
+    return p.communicate()[0]
+#return ifname ipaddr maxaddr
+def get_ipinfo(data):
+    print data
+    data = (i for i in data.split('\n\n') if i and not i.startswith('lo'))
+    ip_info = {}
+    ifname = re.compile(r'(eth[\d:]*|wlan[\d:]*)')
+    ipaddr = re.compile(r'(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]{1,2})(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]{1,2})){3}')
+    macaddr = re.compile(r'[A-F0-9a-f:]{17}')
+    for i in data:
+        x = {}
+        if ifname.match(i):
+            device = ifname.match(i).group()
+            x['Adapter'] = device
+        if macaddr.search(i):
+            mac = macaddr.search(i).group()
+            x['MAC'] = mac
+        if ipaddr.search(i):
+            ip = ipaddr.search(i).group()
+            x['IP'] = ip
+        else:
+            x['IP'] = None
+        ip_info[x['Adapter']] = x['IP']
+    print ip_info
+    return ip_info
+
+
+if __name__ == "__main__":
+    ipinfo = get_ipinfo(read_ifconfig())
