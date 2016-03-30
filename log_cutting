@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+#-*-coding:UTF-8-*-
+'''
+切割Nginx的日志文件,重新生成一个log日志，nginx的进程号不变动
+@author: novaxiaohui
+'''
+
+import time
+import os
+
+path = ['/usr/local/nginx/logs/', 'nginx.pid','access.log']
+str = 'access_'+time.strftime('%Y%m%d%H%M%S')
+tar_conn1 = "cd %s && /bin/mv   %s %s && /bin/kill -USR1 `cat %s`" % (path[0],path[2],str,path[1])
+
+if os.system(tar_conn1) == 0:
+    print 'success', str
+else:
+    print 'Error'
+
+###程序的获取配置文件路径需要改成绝对路径  
+###需要给文件添加可执行状态：chmod a+x test.py 
+###加入定时任务  crontab  -e  * 03 * * 1 /home/nova/log_cutting.py 每周一3点执行
+###缺陷在于仅适用于nginx,并且没有对日志过滤清理，只是转储
