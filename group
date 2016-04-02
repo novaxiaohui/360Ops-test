@@ -1,0 +1,110 @@
+class node:
+ 
+    def __init__(self, data):
+        self._data = data
+        self._children = []
+ 
+    def getdata(self):
+        return self._data
+ 
+    def getchildren(self):
+        return self._children
+ 
+    def add(self, node):
+        ##if full
+        if len(self._children) == 4:
+            return False
+        else:
+            self._children.append(node)
+ 
+    def go(self, data):
+        for child in self._children:
+            if child.getdata() == data:
+                return child
+        return None
+ 
+class tree:
+ 
+    def __init__(self):
+        self._head = node('header')
+ 
+    def linktohead(self, node):
+        self._head.add(node)
+    def add(self,k,v):
+        from collections import deque
+        root=self._head
+        queue = deque([root])
+     
+        while len(queue)>0:
+            cur = queue.popleft()
+            chl = cur.getchildren()
+            for c in chl:
+                if c== k:
+                    c.add(v)
+                    return 0
+                else:
+                    queue.append(c)
+        return 1
+    def leafnodes(self,k):
+		from collections import deque
+		queue = deque([k])
+		leaf=[]
+		while len(queue)>0:
+			cur = queue.popleft()
+			chl = cur.getchildren()
+			for c in chl:
+				if len(c.getchildren())==0:
+					leaf.append(c)
+				else:
+					queue.append(c)
+		return leaf
+
+    def get(self,k):
+		from collections import deque
+		root=self._head
+		queue = deque([root])
+		while len(queue)>0:
+			cur = queue.popleft()
+			chl = cur.getchildren()
+			for c in chl:
+				if c== k:
+					queue=deque([k])
+					return self.leafnodes(k)
+				else:
+					queue.append(c)
+		return []
+'''
+define node
+'''
+a = node('A')
+b = node('B')
+c = node('C')
+d = node('D')
+e = node('E')
+f = node('F')
+g = node('G')
+h = node('H')
+'''
+adding node to build tree
+'''
+a.add(b)
+a.add(g)
+a.add(h)
+b.add(c)
+b.add(e)
+c.add(d)
+c.add(f)
+f.add(node(30))
+ 
+tr = tree()
+tr.linktohead(a)
+ 
+ 
+#testcase
+for i in f.getchildren():
+    print 'value after', f.getdata(),' is ', i.getdata()
+tr.add(f,node(4))
+for i in tr.get(b):
+	print i.getdata()
+for i in f.getchildren():
+    print 'value after', f.getdata(),' is ', i.getdata()
